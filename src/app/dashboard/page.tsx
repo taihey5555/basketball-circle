@@ -3,8 +3,19 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
 
+type Practice = {
+  id: string
+  title: string
+  date: string
+  location?: string
+  level?: string
+  image_url?: string
+  participants: string[]
+  capacity?: number
+}
+
 export default function DashboardPage() {
-  const [practices, setPractices] = useState<any[]>([])
+  const [practices, setPractices] = useState<Practice[]>([])
   const [userId, setUserId] = useState<string | null>(null)
 
   // ユーザー取得
@@ -22,7 +33,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchPractices = async () => {
       const { data } = await supabase.from('practices').select('*').order('date', { ascending: true })
-      if (data) setPractices(data)
+      if (data) setPractices(data as Practice[])
     }
     fetchPractices()
   }, [])
@@ -58,9 +69,8 @@ export default function DashboardPage() {
       {practices.map((p) => {
         const participants = p.participants || []
         const alreadyJoined = participants.includes(userId)
-        const capacity = p.capacity || null
+        const capacity = p.capacity ?? null
         const isFull = capacity !== null && participants.length >= capacity
-        const remaining = capacity !== null ? capacity - participants.length : null
 
         return (
           <div key={p.id} className="border p-4 mb-6 rounded shadow">
