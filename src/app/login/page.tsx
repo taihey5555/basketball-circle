@@ -11,16 +11,41 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
-    if (error) {
-      setError(error.message)
-    } else {
-      router.push('/dashboard')
+    if (loginError) {
+      setError(loginError.message)
+      return
     }
+
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser()
+    if (getUserError || !user) {
+      setError('ユーザー情報取得エラー')
+      return
+    }
+
+    // user_profiles に存在するかチェック
+    const { data: existingProfile } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+
+    if (!existingProfile) {
+      // 存在しない場合はプロフィール登録
+      await supabase.from('user_profiles').insert([
+        {
+          id: user.id,
+          name: email.split('@')[0], // 仮名（メールのローカル部分を使う）
+          role: 'user',
+        },
+      ])
+    }
+
+    router.push('/')
   }
 
   return (

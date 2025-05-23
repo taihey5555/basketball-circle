@@ -12,24 +12,28 @@ export default function SignupPage() {
 
   const handleSignup = async () => {
     setError('')
-    const result = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { name },
-        },
-      })
-      if (result.error) {
-        setError(result.error.message)
-      } else {
-        router.push('/dashboard')
-      }
-      
+
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (signUpError) {
+      setError(signUpError.message)
+      return
+    }
+
+    // ここで getUser はしない。認証メール確認前はセッション未確定なため失敗することが多い
+    // プロフィール登録はメール認証完了後にやることも多い
+
+    // ✅ 認証確認ページへリダイレクト
+    router.push('/verify-email')
   }
 
   return (
     <div className="p-8 max-w-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">サインアップ</h1>
+
       <input
         className="w-full mb-2 p-2 border"
         type="text"
@@ -51,7 +55,9 @@ export default function SignupPage() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+
       {error && <p className="text-red-500">{error}</p>}
+
       <button
         onClick={handleSignup}
         className="w-full bg-blue-600 text-white py-2 mt-4 rounded"
