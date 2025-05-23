@@ -62,11 +62,11 @@ export default function HomePage() {
     location.reload()
   }
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/')
-    router.refresh()
-  }
+  // const handleLogout = async () => {
+  //   await supabase.auth.signOut()
+  //   router.push('/')
+  //   router.refresh()
+  // }
 
   return (
     <div className="bg-sky-50 min-h-screen">
