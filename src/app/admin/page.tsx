@@ -4,6 +4,18 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
 
+type Practice = {
+  id: string
+  title: string
+  date: string
+  location?: string
+  level: string
+  image_url?: string
+  participants?: string[]
+  capacity?: number
+  fee?: number
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [title, setTitle] = useState('')
@@ -15,7 +27,8 @@ export default function AdminPage() {
   const [fee, setFee] = useState<number | ''>('')
 
   const [message, setMessage] = useState('')
-  const [practices, setPractices] = useState<any[]>([])
+  const [practices, setPractices] = useState<Practice[]>([]) // ✅ 修正済み
+
   
 
   const handleSubmit = async () => {
