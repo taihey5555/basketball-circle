@@ -1,13 +1,26 @@
-// ✅ app/verify-email/page.tsx
+'use client'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation' // ← これが必要！
+
 export default function VerifyEmailPage() {
+  const searchParams = useSearchParams()
+  const [status, setStatus] = useState('確認中...')
+
+  useEffect(() => {
+    const token = searchParams.get('token')
+    if (!token) {
+      setStatus('無効なトークンです。')
+      return
+    }
+
+    // 任意: tokenをSupabaseで確認してセッション生成など
+    // router.push('/dashboard') などに飛ばしてもよい
+    setStatus('メール確認が完了しました！')
+  }, [searchParams]) // ← 依存に searchParams を入れるのも推奨されます
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-sky-50 text-center p-6">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">仮登録完了！</h1>
-      <p className="text-gray-700 max-w-md">
-        ご登録いただいたメールアドレス宛に確認メールを送信しました。
-        <br />
-        メール内のリンクをクリックして本登録を完了してください。
-      </p>
+    <div className="p-8 text-center">
+      <h1 className="text-xl">{status}</h1>
     </div>
   )
 }
